@@ -1,0 +1,6 @@
+Scopes needed to manage Channels:
+
+bits:read (queuing)
+channel:manage:redemptions (queuing)
+channel:read:redemptions (queuing)
+channel:read:subscriptions (queuing)

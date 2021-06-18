@@ -1,0 +1,108 @@
+{
+  "allowHttpBackend": false,
+  "backendCommand": "",
+  "backendFolderName": "",
+  "certificateExceptions": [],
+  "extensionViews": [
+    {
+      "channelId": "265737932",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "navigatornomad",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": true
+      },
+      "frameSize": {
+        "width": 1280,
+        "height": 720
+      },
+      "id": "2",
+      "isPopout": false,
+      "label": "Viewer",
+      "linked": true,
+      "linkedUserId": "265737932",
+      "orientation": "Portrait",
+      "type": "video_overlay",
+      "viewerType": "Logged-In Viewer"
+    },
+    {
+      "channelId": "265737932",
+      "configurationAnchor": "video_overlay",
+      "displayChannelName": "navigatornomad",
+      "features": {
+        "isBitsEnabled": false,
+        "isChatEnabled": false,
+        "isSubscriptionStatusAvailable": false
+      },
+      "frameSize": {
+        "width": 800,
+        "height": 450
+      },
+      "id": "3",
+      "isPopout": false,
+      "label": "Smaller",
+      "linked": false,
+      "linkedUserId": "",
+      "orientation": "Portrait",
+      "type": "video_overlay",
+      "viewerType": "Broadcaster"
+    }
+  ],
+  "manifest": {
+    "anchor": "video_overlay",
+    "assetUrls": [],
+    "authorName": "NavigatorNomad",
+    "bitsEnabled": false,
+    "canInstall": true,
+    "configUrl": "http://localhost:8090/config.html",
+    "configurationLocation": "none",
+    "description": "Allows creating a remote control overlay that can integrate with a twitch stream feed and allow viewers to interact remotely with devices setup by the streamer.",
+    "eulaTosUrl": "",
+    "hasChatSupport": true,
+    "iconUrl": "",
+    "iconUrls": {},
+    "id": "wrwuklictfk6o77kyr14s5pe8ozaql",
+    "installationCount": -42,
+    "liveConfigUrl": "http://localhost:8090/live_config.html",
+    "name": "ROVerlay",
+    "panelHeight": 0,
+    "privacyPolicyUrl": "",
+    "requestIdentityLink": true,
+    "requiredBroadcasterAbilities": [],
+    "screenshotUrls": [],
+    "sku": "",
+    "state": "Testing",
+    "subscriptionsSupportLevel": "none",
+    "summary": "Rover remote control interface",
+    "supportEmail": "negentropicdev@gmail.com",
+    "vendorCode": "",
+    "version": "0.0.1",
+    "viewerSummary": "",
+    "viewerUrl": "",
+    "viewerUrls": {
+      "videoOverlay": "http://localhost:8090/video_overlay.html"
+    },
+    "views": {
+      "videoOverlay": {
+        "viewerUrl": "http://localhost:8090/video_overlay.html",
+        "canLinkExternalContent": false
+      },
+      "config": {
+        "viewerUrl": "http://localhost:8090/config.html",
+        "canLinkExternalContent": false
+      },
+      "liveConfig": {
+        "viewerUrl": "http://localhost:8090/live_config.html",
+        "canLinkExternalContent": false
+      }
+    },
+    "whitelistedConfigUrls": [],
+    "whitelistedPanelUrls": []
+  },
+  "frontendCommand": "",
+  "frontendFolderName": "",
+  "name": "ROVerlay",
+  "usingRandomFrontendHostingPort": false,
+  "version": 3
+}
