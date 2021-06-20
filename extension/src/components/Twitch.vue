@@ -11,6 +11,7 @@
 <script>
 
 import JWT from 'jsonwebtoken';
+import Vector from '../common/vector';
 
 var twitch = window.Twitch.ext;
 
@@ -25,7 +26,9 @@ export default {
       channelId: null,
       clientId: null,
       userId: null,
-      displayResolution: null
+      displayResolution: null,
+      videoResolution: null,
+      emitResize: false
     };
   },
   props: [
@@ -45,22 +48,33 @@ export default {
   },
   methods: {
     onAuthorized(auth) {
-      console.log(auth.token);
       this.tokenString = auth.token;
       this.token = JWT.decode(auth.token);
-      console.log(this.token);
     },
     onContext(context, changed) {
-      console.log(changed);
-      console.log(context);
 
-      if (changed.includes("displayResolution") && context.displayResolution != this.displayResolution) {
-        this.displayResolution = context.displayResolution;
-        var size = this.displayResolution.split('x');
-        var width = parseInt(size[0]);
-        var height = parseInt(size[1]);
+      if (changed.includes("videoResolution")) {
+        console.log("videoResolution");
+        var videoSize = context.videoResolution.split('x');
+        this.videoResolution = Vector.create(parseInt(videoSize[0]), parseInt(videoSize[1]));
 
-        this.$emit('resize', width, height);
+        if (this.emitResize) {
+          this.emitResize = false;
+          this.$emit('resize', Vector.clone(this.displayResolution), Vector.clone(this.videoResolution));
+        }
+      }
+
+      if (changed.includes("displayResolution")) {
+        console.log("displayResolution");
+        var displaySize = context.displayResolution.split('x');
+        this.displayResolution = Vector.create(parseInt(displaySize[0]), parseInt(displaySize[1]));
+
+        if (this.videoResolution != null) {
+          this.emitResize = false;
+          this.$emit('resize', Vector.clone(this.displayResolution), Vector.clone(this.videoResolution));
+        } else {
+          this.emitResize = true;
+        }
       }
     },
     onError(err) {

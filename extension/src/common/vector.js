@@ -1,4 +1,12 @@
 export default {
+  create(x, y) {
+    return {x: x, y: y};
+  },
+
+  clone(vec) {
+    return {x: vec.x, y: vec.y};
+  },
+
   length(vec) {
     return Math.sqrt(vec.x * vec.x + vec.y * vec.y);
   },

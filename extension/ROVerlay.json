@@ -57,7 +57,7 @@
     "canInstall": true,
     "configUrl": "http://localhost:8090/config.html",
     "configurationLocation": "none",
-    "description": "Allows creating a remote control overlay that can integrate with a twitch stream feed and allow viewers to interact remotely with devices setup by the streamer.",
+    "description": "Various on-screen controls can be configured such as joysticks, buttons, sliders, and more to allow viewers to interact with software and devices run by the streamer. Some ideas include:\n - On/Off controls for lights and simple gadgets visible in the stream\n - Controls for software synths and audio software\n - Controls for Twitch Plays games that don't spam chat\n - R/C cars and rover controls",
     "eulaTosUrl": "",
     "hasChatSupport": true,
     "iconUrl": "",
@@ -74,11 +74,11 @@
     "sku": "",
     "state": "Testing",
     "subscriptionsSupportLevel": "none",
-    "summary": "Rover remote control interface",
+    "summary": "Allows broadcasters to configure controls that overlay a stream so that viewers can interact with devices and software run by the streamer.",
     "supportEmail": "negentropicdev@gmail.com",
     "vendorCode": "",
     "version": "0.0.1",
-    "viewerSummary": "",
+    "viewerSummary": "Allows broadcasters to configure controls that overlay a stream so that viewers can interact with devices and software run by the streamer.",
     "viewerUrl": "",
     "viewerUrls": {
       "videoOverlay": "http://localhost:8090/video_overlay.html"

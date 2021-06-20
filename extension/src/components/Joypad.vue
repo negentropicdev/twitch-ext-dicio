@@ -56,10 +56,6 @@ export default {
         },
         isDown: false,
       },
-      scale: {
-        x: 1,
-        y: 1
-      },
     };
   },
   props: {
@@ -67,14 +63,10 @@ export default {
     offset: Object,
     knobRadius: Number,
     outerRadius: Number,
-    scaleX: {
+    scale: {
       type: Number,
       default: 1
     },
-    scaleY: {
-      type: Number,
-      default: 1
-    }
   },
   computed: {
     padStyle() {
@@ -100,10 +92,7 @@ export default {
       return Vector.scale(p, this.maxOffset);
     },
     invScale() {
-      return {
-        x: 1 / this.scaleX,
-        y: 1 / this.scaleY
-      };
+      return 1 / this.scale;
     }
   },
   mounted() {
@@ -131,7 +120,7 @@ export default {
       this.mouse.cur.y = evt.screenY;
 
       //This also inverts the scaling to get screen pixels to map correctly when the overlay is resized
-      this.mouse.diff = Vector.scale2(Vector.sub(this.mouse.cur, this.mouse.down), this.invScale);
+      this.mouse.diff = Vector.scale(Vector.sub(this.mouse.cur, this.mouse.down), this.invScale);
 
       this.pos.diff = Vector.scale({x: this.mouse.diff.x, y: -this.mouse.diff.y}, 1 / this.maxOffset);
       this.pos.cur = Vector.add(this.pos.start, this.pos.diff);

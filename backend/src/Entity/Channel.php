@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ChannelRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,16 @@ class Channel
      * @ORM\Column(type="boolean")
      */
     private $active;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ControlSet::class, mappedBy="channel")
+     */
+    private $controlSets;
+
+    public function __construct()
+    {
+        $this->controlSets = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,6 +115,36 @@ class Channel
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ControlSet[]
+     */
+    public function getControlSets(): Collection
+    {
+        return $this->controlSets;
+    }
+
+    public function addControlSet(ControlSet $controlSet): self
+    {
+        if (!$this->controlSets->contains($controlSet)) {
+            $this->controlSets[] = $controlSet;
+            $controlSet->setChannel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeControlSet(ControlSet $controlSet): self
+    {
+        if ($this->controlSets->removeElement($controlSet)) {
+            // set the owning side to null (unless already changed)
+            if ($controlSet->getChannel() === $this) {
+                $controlSet->setChannel(null);
+            }
+        }
 
         return $this;
     }

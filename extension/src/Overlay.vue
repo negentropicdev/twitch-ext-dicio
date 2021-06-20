@@ -1,12 +1,13 @@
 <template>
   <div  ref="app" id="app" :style="appStyle">
     <Twitch ref="twitch" @resize="resize"></Twitch>
-    <!--<Console
+    <Console
       ref="console"
       width="640"
       height="480"
       @command="command"
-    ></Console>-->
+      v-show="consoleVisible"
+    ></Console>
     <div ref="container" id="container" :style="overlayStyle">
       <Joypad
         ref="movepad"
@@ -14,8 +15,7 @@
         :autocenter="true"
         :knobRadius="25"
         :outerRadius="75"
-        :scaleX="size.scale.x"
-        :scaleY="size.scale.y"
+        :scale="scaled.scale"
         @change="changeMove"
       ></Joypad>
       <Joypad
@@ -24,8 +24,7 @@
         :autocenter="false"
         :knobRadius="25"
         :outerRadius="75"
-        :scaleX="size.scale.x"
-        :scaleY="size.scale.y"
+        :scale="scaled.scale"
         @change="changeLook"
       ></Joypad>
     </div>
@@ -49,7 +48,6 @@ body {
 
 #container {
   position: absolute;
-  /*background-image: url("assets/overlay.png");*/
 }
 </style>
 
@@ -57,7 +55,9 @@ body {
 
 import Joypad from './components/Joypad';
 import Twitch from './components/Twitch';
-//import Console from './components/Console';
+import Console from './components/Console';
+
+/*eslint no-unused-vars: ["off", {"args": "none"}]*/
 
 var gpTimeout = 50;
 var colorRE = new RegExp('^#[0-9a-fA-F]{3}$');
@@ -67,28 +67,28 @@ export default {
   components: {
     Twitch,
     Joypad,
-    //Console,
+    Console,
   },
   data: function() {
     return {
+      showConsole: false,
       pads: [],
-      size: {
-        stream: { //vector
-          x: 1920,
-          y: 1080
+      overlay: { // From OBS etc
+        size: { //vector
+          x: 810,
+          y: 300
         },
-        overlay: { //vector
-          x: 640,
-          y: 480
-        },
+        position: {
+          x: 150,
+          y: 0
+        }
+      },
+      scaled: { // calculated based on display res vs video res
         offset: { //vector
           x: 0,
-          y: -15
+          y: 0
         },
-        scale: {
-          x: 1,
-          y: 1
-        }
+        scale: 1
       },
       move: {
         x: 0,
@@ -111,7 +111,7 @@ export default {
         mousemove: null,
         mouseup: null
       },
-      update: null
+      update: null,
     }
   },
   mounted() {
@@ -120,7 +120,9 @@ export default {
       this.$refs.lookpad
     ];
 
-    //this.$refs.console.enable();
+    if (this.showConsole) {
+      this.$refs.console.enable();
+    }
 
     this.handler.connected = this.gamepadconnected.bind(this);
     this.handler.disconnected = this.gamepaddisconnected.bind(this);
@@ -150,16 +152,19 @@ export default {
     appStyle() {
       return {
         "transform-origin": "top left",
-        transform: "scale(" + this.size.scale.x + ", " + this.size.scale.y + ")",
+        transform: "scale(" + this.scaled.scale + ")",
       };
     },
     overlayStyle() {
       return {
-        width: this.size.overlay.x + "px",
-        height: this.size.overlay.y + "px",
-        left: this.size.offset.x + "px",
-        top: this.size.offset.y + "px"
+        width: this.overlay.size.x + "px",
+        height: this.overlay.size.y + "px",
+        left: (this.overlay.position.x + this.scaled.offset.x) + "px",
+        top: (this.overlay.position.y + this.scaled.offset.y) + "px"
       };
+    },
+    consoleVisible() {
+      return this.showConsole;
     }
   },
   methods: {
@@ -325,9 +330,26 @@ export default {
 
       this.update = setTimeout(this.updateGamepad.bind(this), gpTimeout);
     },
-    resize(width, height) {
-      this.size.scale.x = width / this.size.stream.x;
-      this.size.scale.y = height / this.size.stream.y;
+    resize(display, video) {
+      var ratioOffsetX = 0;
+      var ratioOffsetY = 0;
+
+      var arDisplay = display.x / display.y;
+      var arVideo = video.x / video.y;
+
+      if (Math.abs(arDisplay - arVideo) < 0.005) { //rounding error on integer pixels with at least 720p
+        this.scaled.offset.x = 0;
+        this.scaled.offset.y = 0;
+        this.scaled.scale = display.x / video.x;
+      } else if (arDisplay > arVideo) { //display wider than video
+        this.scaled.offset.x = (display.x - display.y * arVideo) / 2;
+        this.scaled.offset.y = 0;
+        this.scaled.scale = display.y / video.y;
+      } else if (arDisplay < arVideo) { //display taller than video
+        this.scaled.offset.x = 0;
+        this.scaled.offset.y = (display.y - display.x * arVideo) / 2;
+        this.scaled.scale = display.x / video.x;
+      }
     }
   }
 }
