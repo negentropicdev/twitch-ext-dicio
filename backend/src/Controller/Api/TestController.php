@@ -34,8 +34,6 @@ class TestController extends AbstractController
       $response->setData((array)$ret);
     }
 
-    $response->headers->set('Access-Control-Allow-Origin', '*');
-
     return $response;
   }
 }
