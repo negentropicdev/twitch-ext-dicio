@@ -55,7 +55,7 @@
     "authorName": "NavigatorNomad",
     "bitsEnabled": false,
     "canInstall": true,
-    "configUrl": "http://localhost:8090/config.html",
+    "configUrl": "https://roverlayext.dbommarito.com/config.html",
     "configurationLocation": "none",
     "description": "Various on-screen controls can be configured such as joysticks, buttons, sliders, and more to allow viewers to interact with software and devices run by the streamer. Some ideas include:\n - On/Off controls for lights and simple gadgets visible in the stream\n - Controls for software synths and audio software\n - Controls for Twitch Plays games that don't spam chat\n - R/C cars and rover controls",
     "eulaTosUrl": "",
@@ -64,7 +64,7 @@
     "iconUrls": {},
     "id": "wrwuklictfk6o77kyr14s5pe8ozaql",
     "installationCount": -42,
-    "liveConfigUrl": "http://localhost:8090/live_config.html",
+    "liveConfigUrl": "https://roverlayext.dbommarito.com/live_config.html",
     "name": "ROVerlay",
     "panelHeight": 0,
     "privacyPolicyUrl": "",
@@ -81,19 +81,23 @@
     "viewerSummary": "Allows broadcasters to configure controls that overlay a stream so that viewers can interact with devices and software run by the streamer.",
     "viewerUrl": "",
     "viewerUrls": {
-      "videoOverlay": "http://localhost:8090/video_overlay.html"
+      "mobile": "https://roverlayext.dbommarito.com/video_overlay.html",
+      "videoOverlay": "https://roverlayext.dbommarito.com/video_overlay.html"
     },
     "views": {
+      "mobile": {
+        "viewerUrl": "https://roverlayext.dbommarito.com/video_overlay.html"
+      },
       "videoOverlay": {
-        "viewerUrl": "http://localhost:8090/video_overlay.html",
+        "viewerUrl": "https://roverlayext.dbommarito.com/video_overlay.html",
         "canLinkExternalContent": false
       },
       "config": {
-        "viewerUrl": "http://localhost:8090/config.html",
+        "viewerUrl": "https://roverlayext.dbommarito.com/config.html",
         "canLinkExternalContent": false
       },
       "liveConfig": {
-        "viewerUrl": "http://localhost:8090/live_config.html",
+        "viewerUrl": "https://roverlayext.dbommarito.com/live_config.html",
         "canLinkExternalContent": false
       }
     },

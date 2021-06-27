@@ -50,6 +50,7 @@ export default {
     onAuthorized(auth) {
       this.tokenString = auth.token;
       this.token = JWT.decode(auth.token);
+      this.$emit('auth', this.token, this.tokenString);
     },
     onContext(context, changed) {
 

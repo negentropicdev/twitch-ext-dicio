@@ -49,9 +49,15 @@ class Channel
      */
     private $controlSets;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Client::class, mappedBy="channel")
+     */
+    private $clients;
+
     public function __construct()
     {
         $this->controlSets = new ArrayCollection();
+        $this->clients = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -143,6 +149,36 @@ class Channel
             // set the owning side to null (unless already changed)
             if ($controlSet->getChannel() === $this) {
                 $controlSet->setChannel(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Client[]
+     */
+    public function getClients(): Collection
+    {
+        return $this->clients;
+    }
+
+    public function addClient(Client $client): self
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients[] = $client;
+            $client->setChannel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClient(Client $client): self
+    {
+        if ($this->clients->removeElement($client)) {
+            // set the owning side to null (unless already changed)
+            if ($client->getChannel() === $this) {
+                $client->setChannel(null);
             }
         }
 

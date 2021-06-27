@@ -1,21 +1,25 @@
 <template>
   <div  ref="app" id="app" :style="appStyle">
-    <Twitch ref="twitch" @resize="resize"></Twitch>
-    <Console
-      ref="console"
-      width="640"
-      height="480"
-      @command="command"
-      v-show="consoleVisible"
-    ></Console>
+    <Twitch ref="twitch" @resize="resize" @auth="auth"></Twitch>
+
     <div ref="container" id="container" :style="overlayStyle">
+
+      <Console
+        ref="console"
+        width="480"
+        height="270"
+        style="position: absolute; top: 15px; left: 165px;"
+        @command="command"
+        v-show="consoleVisible"
+      ></Console>
+      
       <Joypad
         ref="movepad"
         :offset="{ x: 82, y: 90 }"
         :autocenter="true"
         :knobRadius="25"
         :outerRadius="75"
-        :scale="scaled.scale"
+        :scale="scale"
         @change="changeMove"
       ></Joypad>
       <Joypad
@@ -24,7 +28,7 @@
         :autocenter="false"
         :knobRadius="25"
         :outerRadius="75"
-        :scale="scaled.scale"
+        :scale="scale"
         @change="changeLook"
       ></Joypad>
     </div>
@@ -56,6 +60,7 @@ body {
 import Joypad from './components/Joypad';
 import Twitch from './components/Twitch';
 import Console from './components/Console';
+import axios from 'axios';
 
 /*eslint no-unused-vars: ["off", {"args": "none"}]*/
 
@@ -71,7 +76,7 @@ export default {
   },
   data: function() {
     return {
-      showConsole: false,
+      showConsole: true,
       pads: [],
       overlay: { // From OBS etc
         size: { //vector
@@ -83,13 +88,7 @@ export default {
           y: 0
         }
       },
-      scaled: { // calculated based on display res vs video res
-        offset: { //vector
-          x: 0,
-          y: 0
-        },
-        scale: 1
-      },
+      scale: 1,
       move: {
         x: 0,
         y: 0
@@ -135,6 +134,8 @@ export default {
     document.documentElement.addEventListener("mousemove", this.handler.mousemove, true);
     document.documentElement.addEventListener("mouseup", this.handler.mouseup, true);
     document.documentElement.addEventListener("mouseexit", this.handler.mouseup, true);
+
+    console.log(this);
   },
   beforeDestroy() {
     removeEventListener("gamepadconnected", this.handler.connected);
@@ -152,15 +153,15 @@ export default {
     appStyle() {
       return {
         "transform-origin": "top left",
-        transform: "scale(" + this.scaled.scale + ")",
+        transform: "scale(" + this.scale + ")",
       };
     },
     overlayStyle() {
       return {
         width: this.overlay.size.x + "px",
         height: this.overlay.size.y + "px",
-        left: (this.overlay.position.x + this.scaled.offset.x) + "px",
-        top: (this.overlay.position.y + this.scaled.offset.y) + "px"
+        left: this.overlay.position.x + "px",
+        top: this.overlay.position.y + "px"
       };
     },
     consoleVisible() {
@@ -168,6 +169,28 @@ export default {
     }
   },
   methods: {
+    /** Twitch functionality */
+    auth(token, tokenStr) {
+      console.log(token);
+
+      axios({
+        method: 'get',
+        url: 'https://roverlay.dbommarito.com/api/testauth',
+        headers: {
+          'Authorization': 'Bearer ' + tokenStr
+        }
+      }).then(function(response) {
+        console.log(response);
+      }).catch(function (err) {
+        console.log(err);
+      });
+    },
+
+    resize(display, video) {
+      this.scale = display.y / video.y;
+    },
+
+    /** Virtual console functionality */
     command(str) {
       var cmds = str.split(';');
       var i;
@@ -261,6 +284,8 @@ export default {
     handlerError(status) {
       this.$refs.console.addLine('Unknown input: ' + status, '#F40');
     },
+
+    /** Controls functionality */
     mousemove (evt) {
       this.pads.forEach(function(pad) {
         pad.mousemove(evt);
@@ -329,27 +354,6 @@ export default {
       }
 
       this.update = setTimeout(this.updateGamepad.bind(this), gpTimeout);
-    },
-    resize(display, video) {
-      var ratioOffsetX = 0;
-      var ratioOffsetY = 0;
-
-      var arDisplay = display.x / display.y;
-      var arVideo = video.x / video.y;
-
-      if (Math.abs(arDisplay - arVideo) < 0.005) { //rounding error on integer pixels with at least 720p
-        this.scaled.offset.x = 0;
-        this.scaled.offset.y = 0;
-        this.scaled.scale = display.x / video.x;
-      } else if (arDisplay > arVideo) { //display wider than video
-        this.scaled.offset.x = (display.x - display.y * arVideo) / 2;
-        this.scaled.offset.y = 0;
-        this.scaled.scale = display.y / video.y;
-      } else if (arDisplay < arVideo) { //display taller than video
-        this.scaled.offset.x = 0;
-        this.scaled.offset.y = (display.y - display.x * arVideo) / 2;
-        this.scaled.scale = display.x / video.x;
-      }
     }
   }
 }
