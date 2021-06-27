@@ -30,7 +30,7 @@ class CorsSubscriber implements EventSubscriberInterface
 
     //For OPTION requests send an empty response
     //CORS headers will be added in onResponse() below when fired
-    if ($event->getRequest()->getRealMethod() == 'OPTION') {
+    if ($event->getRequest()->getRealMethod() == 'OPTIONS') {
       $event->setResponse(new Response());
     }
   }
@@ -43,7 +43,7 @@ class CorsSubscriber implements EventSubscriberInterface
 
     $headers = $event->getResponse()->headers;
     $headers->set('Access-Control-Allow-Origin', '*');
-    $headers->set('Access-Control-Allow-Methods', 'GET,POST');
-    $headers->set('Access-Control-Allow-Header', 'Authorization');
+    $headers->set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    $headers->set('Access-Control-Allow-Header', 'authorization');
   }
 }
