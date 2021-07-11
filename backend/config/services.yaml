@@ -29,10 +29,3 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
-
-    App\Service\TwitchService:
-        arguments:
-            $api_client: '%env(resolve:TWITCH_API_CLIENT)%'
-            $api_secret: '%env(resolve:TWITCH_API_SECRET)%'
-            $ext_client: '%env(resolve:TWITCH_EXT_CLIENT)%'
-            $ext_secret: '%env(resolve:TWITCH_EXT_SECRET)%'

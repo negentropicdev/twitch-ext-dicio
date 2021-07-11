@@ -1,5 +1,7 @@
 <template>
-  <input type="text" ref="input" class="un-console-input" @keydown.delete="bs" @keydown.up="up" @keydown.down="down" @keypress="keypress" @focus="captureInput" @blur="releaseInput">
+  <input type="text" ref="input" class="un-console-input" :style="inputStyle"
+    @keydown.delete="bs" @keydown.up="up" @keydown.down="down"
+    @keypress="keypress" @focus="captureInput" @blur="releaseInput">
 </template>
 
 <style scoped>
@@ -26,9 +28,13 @@
 export default {
   name: 'ConsoleInput',
   components: {},
-  props: [],
+  props: [
+    'disabled'
+  ],
   data() {
-    return {};
+    return {
+      focus: false
+    };
   },
   beforeCreate() {},
   created() {},
@@ -40,36 +46,57 @@ export default {
   updated() {},
   beforeDestroy() {},
   destroyed() {},
-  computed: {},
+  computed: {
+    inputStyle() {
+      return {
+        cursor: this.disabled ? 'default' : 'pointer'
+      };
+    }
+  },
   methods: {
     bs: function(evt) {
-      evt.preventDefault();
-      //Also captures delete key which we're ignoring
-      if (evt.key == 'Backspace') {
-        this.$emit('key', 'Backspace');
+      if (this.focus) {
+        evt.preventDefault();
+        //Also captures delete key which we're ignoring
+        if (evt.key == 'Backspace') {
+          this.$emit('key', 'Backspace');
+        }
       }
     },
     
     up: function(evt) {
-      evt.preventDefault();
-      this.$emit('key', 'UpArrow');
+      if (this.focus) {
+        evt.preventDefault();
+        this.$emit('key', 'UpArrow');
+      }
     },
     
     down: function(evt) {
-      evt.preventDefault();
-      this.$emit('key', 'DownArrow');
+      if (this.focus) {
+        evt.preventDefault();
+        this.$emit('key', 'DownArrow');
+      }
     },
     
     keypress: function(evt) {
-      evt.preventDefault();
-      this.$emit('key', evt.key);
+      if (this.focus) {
+        evt.preventDefault();
+        this.$emit('key', evt.key);
+      }
     },
     
     captureInput: function() {
-      this.$emit('captureInput');
+      if (this.disabled) {
+        this.$refs.input.blur();
+      } else {
+        this.focus = true;
+        this.$emit('captureInput');
+      }
     },
     
     releaseInput: function() {
+      console.log('blur');
+      this.focus = false;
       this.$emit('releaseInput');
     },
     

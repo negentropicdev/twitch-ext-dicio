@@ -1,28 +1,31 @@
 <template>
-  <div class="outer-wrapper" ref="outer" :style="outerStyle">
-    <ConsoleScanlines
-      v-if="!hideScanlines"
-    ></ConsoleScanlines>
+  <div class="outer-wrapper" ref="outer" :style="outerStyle" @mouseover="mouseOver(true)" @mouseleave="mouseOver(false)">
+    <div class="inner-wrapper" ref="inner" :style="innerStyle">
+      <ConsoleScanlines
+        v-if="!hideScanlines"
+      ></ConsoleScanlines>
 
-    <div class="un-console" ref="console" :style="consoleStyle">
-      <ConsoleLog
-        ref="log"
-        :defaultColor="defaultColor"
-        :length="historyLength"
-      ></ConsoleLog>
+      <div class="un-console" ref="console" :style="consoleStyle">
+        <ConsoleLog
+          ref="log"
+          :defaultColor="defaultColor"
+          :length="historyLength"
+        ></ConsoleLog>
 
-      <ConsoleEcho
-        ref="echo"
-        :captured="captured"
-        :disabled="disabled"
-        :text="currentInput"
-        :echoColor="echoColor"
-      ></ConsoleEcho>
+        <ConsoleEcho
+          ref="echo"
+          :captured="captured"
+          :disabled="disabled"
+          :text="currentInput"
+          :echoColor="echoColor"
+        ></ConsoleEcho>
+      </div>
 
       <ConsoleInput
         @captureInput="captureInput"
         @releaseInput="releaseInput"
         @key="key"
+        :disabled="disabled"
       ></ConsoleInput>
     </div>
   </div>
@@ -31,6 +34,12 @@
 <style scoped>
 .outer-wrapper {
   position: relative;
+  overflow: hidden;
+}
+
+.inner-wrapper {
+  position: relative;
+  transition: top 0.5s;
 }
 
 .un-console {
@@ -45,7 +54,7 @@
 
   background-color: #111;
   opacity: 0.9;
-  padding-top: 2px;
+  padding: 2px;
 }
 </style>
 
@@ -70,7 +79,10 @@ export default {
     'height',
     'hideScanlines',
     'scrollable',
-    'history'
+    'history',
+    'autohide',
+    'slideIn',
+    'ignoreHover'
   ],
   
   data: function() {
@@ -83,6 +95,8 @@ export default {
       disabled: true,
       echoColor: '#2E4',
       defaultColor: '#FFF',
+      nextNewline: true,
+      hover: true,
     };
   },
 
@@ -94,6 +108,14 @@ export default {
 
   mounted() {
     window.terminal = this;
+  },
+
+  watch: {
+    autohide(val) {
+      if (!val) {
+        this.hover = true;
+      }
+    }
   },
   
   computed: {
@@ -116,6 +138,14 @@ export default {
         width: this.width + 'px',
         height: this.height + 'px'
       };
+    },
+    innerStyle() {
+      return {
+        top: this.hidden ? '-100%' : '0'
+      };
+    },
+    hidden() {
+      return !this.captured && this.autohide && !this.hover && !this.slideIn;
     }
   },
   
@@ -180,13 +210,48 @@ export default {
     releaseInput() {
       this.captured = false;
     },
+
+    mouseOver(hover) {
+      if (!this.ignoreHover) {
+        if (this.autohide) {
+          this.hover = hover;
+        }
+
+        this.$emit('hover', hover);
+      }
+    },
     
     scroll() {
       setTimeout(function() {this.$refs.console.scrollTop = this.$refs.console.scrollHeight;}.bind(this), 0);
     },
+
+    add(text, color) {
+      if (typeof text == 'undefined' || text == '') {
+        return;
+      }
+
+      if (this.nextNewline) {
+        this.$refs.log.add(text, color);
+      } else {
+        this.$refs.log.addToLast(text, color);
+      }
+      
+      this.nextNewline = false;
+      this.scroll();
+    },
     
-    addLine(text, color) {
-      this.$refs.log.add(text, color);
+    addLn(text, color) {
+      if (typeof text == 'undefined' || text == '') {
+        text = '&nbsp;';
+      }
+
+      if (this.nextNewline) {
+        this.$refs.log.add(text, color);
+      } else {
+        this.$refs.log.addToLast(text, color);
+      }
+
+      this.nextNewline = true;
       
       this.scroll();
     },
@@ -197,6 +262,15 @@ export default {
     
     enable() {
       this.disabled = false;
+    },
+
+    show() {
+      this.hover = true;
+    },
+
+    hide() {
+      this.hover = false;
+      this.captured = false;
     },
     
     setEchoColor(color) {

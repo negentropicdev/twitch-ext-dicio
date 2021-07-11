@@ -18,11 +18,6 @@ class Client
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Channel::class, inversedBy="clients")
-     */
-    private $channel;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private $name;
@@ -52,21 +47,15 @@ class Client
      */
     private $active;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Channel::class, inversedBy="clients")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $channel;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getChannel(): ?Channel
-    {
-        return $this->channel;
-    }
-
-    public function setChannel(?Channel $channel): self
-    {
-        $this->channel = $channel;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -137,6 +126,18 @@ class Client
     public function setActive(bool $active): self
     {
         $this->active = $active;
+
+        return $this;
+    }
+
+    public function getChannel(): ?Channel
+    {
+        return $this->channel;
+    }
+
+    public function setChannel(?Channel $channel): self
+    {
+        $this->channel = $channel;
 
         return $this;
     }

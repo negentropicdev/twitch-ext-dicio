@@ -1,6 +1,6 @@
 <template>
   <div class="un-console-log">
-    <div class="un-console-entry" v-for="item in entries" :key="item.id" :style="{color: item.color}">{{item.entry}}</div>
+    <div class="un-console-entry" v-for="item in entries" :key="item.id" v-html="item.entry"></div>
   </div>
 </template>
 
@@ -15,6 +15,8 @@
 </style>
 
 <script>
+
+
 export default {
   name: 'ConsoleLog',
   components: {},
@@ -38,12 +40,8 @@ export default {
   destroyed() {},
   computed: {},
   methods: {
-    add: function(text, color) {
-      if (typeof color == 'undefined') {
-        color = this.defaultColor;
-      }
-      
-      this.entries.push({id: this.id, entry: text, color: color});
+    add(text, color) {
+      this.entries.push({id: this.id, entry: this.makeSpan(text, color)});
       this.id = this.id + 1;
       
       var max = this.length;
@@ -55,6 +53,23 @@ export default {
         this.entries.shift();
       }
     },
+
+    addToLast(text, color) {
+      var last = this.entries[this.entries.length - 1];
+      last.entry += this.makeSpan(text, color);
+    },
+
+    makeSpan(text, color) {
+      if (typeof color == 'undefined') {
+        color = this.defaultColor;
+      }
+
+      if (typeof text == 'undefined') {
+        text = '';
+      }
+
+      return '<span style="color:' + color + '">' + text + '</span>';
+    }
   }
 }
 </script>

@@ -2,25 +2,25 @@
 
 namespace App\Repository;
 
-use App\Entity\ControlSet;
+use App\Entity\Control;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method ControlSet|null find($id, $lockMode = null, $lockVersion = null)
- * @method ControlSet|null findOneBy(array $criteria, array $orderBy = null)
- * @method ControlSet[]    findAll()
- * @method ControlSet[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Control|null find($id, $lockMode = null, $lockVersion = null)
+ * @method Control|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Control[]    findAll()
+ * @method Control[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ControlSetRepository extends ServiceEntityRepository
+class ControlRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ControlSet::class);
+        parent::__construct($registry, Control::class);
     }
 
     // /**
-    //  * @return ControlSet[] Returns an array of ControlSet objects
+    //  * @return Control[] Returns an array of Control objects
     //  */
     /*
     public function findByExampleField($value)
@@ -37,7 +37,7 @@ class ControlSetRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?ControlSet
+    public function findOneBySomeField($value): ?Control
     {
         return $this->createQueryBuilder('c')
             ->andWhere('c.exampleField = :val')

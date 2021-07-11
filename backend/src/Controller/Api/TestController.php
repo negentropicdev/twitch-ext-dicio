@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 use App\Service\TwitchService;
+use App\Repository\RoverlayAppRepository;
+use App\Entity\RoverlayApp;
 
 class TestController extends AbstractController
 {
@@ -17,23 +19,5 @@ class TestController extends AbstractController
   public function __construct(TwitchService $twitch)
   {
     $this->twitch = $twitch;
-  }
-  /**
-   * @Route("/api/testauth", name="api_testauth")
-   */
-  public function index(Request $request): Response
-  {
-    $ret = $this->twitch->verifyReqAuth($request);
-    $response = new JsonResponse();
-
-    if (is_null($ret)) {
-      $response->setData(['err' => 'Unknown error']);
-    } else if (is_string($ret)) {
-      $response->setData(['err' => $ret]);
-    } else {
-      $response->setData((array)$ret);
-    }
-
-    return $response;
   }
 }

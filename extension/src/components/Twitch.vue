@@ -48,14 +48,18 @@ export default {
   },
   methods: {
     onAuthorized(auth) {
+      //console.log('onAuthorized');
+      //console.log(arguments);
+
       this.tokenString = auth.token;
       this.token = JWT.decode(auth.token);
       this.$emit('auth', this.token, this.tokenString);
     },
     onContext(context, changed) {
+      //console.log(arguments);
 
       if (changed.includes("videoResolution")) {
-        console.log("videoResolution");
+        //console.log("videoResolution");
         var videoSize = context.videoResolution.split('x');
         this.videoResolution = Vector.create(parseInt(videoSize[0]), parseInt(videoSize[1]));
 
@@ -66,7 +70,7 @@ export default {
       }
 
       if (changed.includes("displayResolution")) {
-        console.log("displayResolution");
+        //console.log("displayResolution");
         var displaySize = context.displayResolution.split('x');
         this.displayResolution = Vector.create(parseInt(displaySize[0]), parseInt(displaySize[1]));
 
@@ -82,27 +86,46 @@ export default {
 
     },
     onHighlightChanged(isHighlighted) {
-
+      //console.log('onHighlightChanged', isHighlighted);
+      
     },
     onPositionChanged(position) {
-
+      //console.log('onPositionChanged', arguments);
     },
     onVisibilityChanged(isVisible, context) {
+      if (isVisible) {
+        var displaySize = context.displayResolution.split('x');
+        this.displayResolution = Vector.create(parseInt(displaySize[0]), parseInt(displaySize[1]));
 
+        if (this.videoResolution != null) {
+          this.emitResize = false;
+          this.$emit('resize', Vector.clone(this.displayResolution), Vector.clone(this.videoResolution));
+        } else {
+          this.emitResize = true;
+        }
+      }
     },
     onFollow(didFollow, channelName) {
-
+      //console.log(arguments);
     },
     send(target, contentType, message) {
+      //console.log(arguments);
+
       twitch.send(target, contentType, message);
     },
     listen(target, callback) {
+      //console.log(arguments);
+
       twitch.listen(target, callback);
     },
     unlisted(target, callback) {
+      //console.log(arguments);
+
       twitch.unlisten(target, callback);
     },
     follow(channelName) {
+      //console.log(arguments);
+
       twitch.actions.follow(channelName);
     },
     requestIdShare() {

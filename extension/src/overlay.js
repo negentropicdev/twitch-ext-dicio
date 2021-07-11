@@ -1,7 +1,7 @@
 import Vue from 'vue'
-import Overlay from './Overlay.vue'
+import Overlay from './main/Overlay.vue'
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
 new Vue({
   el: '#overlay',

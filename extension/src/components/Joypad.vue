@@ -1,5 +1,5 @@
 <template>
-  <div ref="joypad" :style="padStyle" @mousedown="mousedown" :title="this.padTitle"></div>
+  <div ref="joypad" :style="padStyle" @mousedown="mousedown" @dblclick="ignoreEvent" @mouseover="mouseover(true)" @mouseleave="mouseover(false)" :title="this.padTitle"></div>
 </template>
 
 <style scoped>
@@ -55,6 +55,7 @@ export default {
           y: 0,
         },
         isDown: false,
+        hover: false,
       },
     };
   },
@@ -74,7 +75,7 @@ export default {
       return {
         left: v.x + "px",
         top: v.y + "px",
-        "border-color": this.mouse.isDown ? "red" : "gold",
+        "border-color": this.mouse.isDown ? "orange" : (this.mouse.hover ? "white" : "gold"),
       };
     },
     padTitle() {
@@ -98,6 +99,13 @@ export default {
   mounted() {
   },
   methods: {
+    ignoreEvent(evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+    },
+    mouseover(hover) {
+      this.mouse.hover = hover;
+    },
     mousedown(evt) {
       //console.log("mouse down", evt);
       this.mouse.down.x = evt.screenX;
@@ -108,6 +116,11 @@ export default {
         this.pos.start = this.pos.cur;
         this.pos.diff = {x: 0, y: 0};
       }
+
+      evt.preventDefault();
+      evt.stopPropagation();
+
+      this.$emit('active', this);
     },
     mousemove(evt) {
       if (!this.mouse.isDown) {

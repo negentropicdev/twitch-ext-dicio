@@ -2,13 +2,17 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRepository;
+use Carbon\Carbon;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+
+use App\Repository\UserRepository;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -66,6 +70,64 @@ class User
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $created_at;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $access_token;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $refresh_token;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $expires_at;
+
+    /**
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    private $scopes = [];
+
+    /**
+     * @ORM\OneToMany(targetEntity=ControlGroup::class, mappedBy="dynamic_user")
+     */
+    private $controlGroups;
+
+    public function __construct()
+    {
+        $this->controlGroups = new ArrayCollection();
+    }
+
+    public function jsonSerialize() {
+      $res = [
+        'id' => $this->id,
+        'login' => $this->login,
+        'display_name' => $this->display_name,
+        'broadcaster_type' => $this->broadcaster_type,
+        'type' => $this->type,
+        'created_at' => ($this->created_at != null ? Carbon::instance($this->created_at, 'UTC')->toIso8601ZuluString() : null),
+        'profile_image_url' => $this->profile_image_url,
+        'opaque_id' => $this->opaque_id,
+        'user_id' => $this->user_id,
+        'listen' => $this->pubsub_listen,
+        'send' => $this->pubsub_send
+      ];
+
+      return $res;
+    }
+
+    public function isIdentified(): bool
+    {
+      return $this->user_id != null;
+    }
+
+    public function hasLogin(): bool
+    {
+      return $this->login != null && $this->login != '';
+    }
 
     public function getId(): ?int
     {
@@ -188,6 +250,84 @@ class User
     public function setCreatedAt(?\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getAccessToken(): ?string
+    {
+        return $this->access_token;
+    }
+
+    public function setAccessToken(?string $access_token): self
+    {
+        $this->access_token = $access_token;
+
+        return $this;
+    }
+
+    public function getRefreshToken(): ?string
+    {
+        return $this->refresh_token;
+    }
+
+    public function setRefreshToken(?string $refresh_token): self
+    {
+        $this->refresh_token = $refresh_token;
+
+        return $this;
+    }
+
+    public function getExpiresAt(): ?\DateTimeInterface
+    {
+        return $this->expires_at;
+    }
+
+    public function setExpiresAt(?\DateTimeInterface $expires_at): self
+    {
+        $this->expires_at = $expires_at;
+
+        return $this;
+    }
+
+    public function getScopes(): ?array
+    {
+        return $this->scopes;
+    }
+
+    public function setScopes(array $scopes): self
+    {
+        $this->scopes = $scopes;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ControlGroup[]
+     */
+    public function getControlGroups(): Collection
+    {
+        return $this->controlGroups;
+    }
+
+    public function addControlGroup(ControlGroup $controlGroup): self
+    {
+        if (!$this->controlGroups->contains($controlGroup)) {
+            $this->controlGroups[] = $controlGroup;
+            $controlGroup->setDynamicUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeControlGroup(ControlGroup $controlGroup): self
+    {
+        if ($this->controlGroups->removeElement($controlGroup)) {
+            // set the owning side to null (unless already changed)
+            if ($controlGroup->getDynamicUser() === $this) {
+                $controlGroup->setDynamicUser(null);
+            }
+        }
 
         return $this;
     }

@@ -45,12 +45,17 @@ class Channel
     private $active;
 
     /**
-     * @ORM\OneToMany(targetEntity=ControlSet::class, mappedBy="channel")
+     * @ORM\OneToMany(targetEntity=ControlGroup::class, mappedBy="channel", orphanRemoval=true)
      */
-    private $controlSets;
+    private $controlGroups;
 
     /**
-     * @ORM\OneToMany(targetEntity=Client::class, mappedBy="channel")
+     * @ORM\OneToMany(targetEntity=GroupQueue::class, mappedBy="channel", orphanRemoval=true)
+     */
+    private $groupQueues;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Client::class, mappedBy="channel", orphanRemoval=true)
      */
     private $clients;
 
@@ -58,6 +63,8 @@ class Channel
     {
         $this->controlSets = new ArrayCollection();
         $this->clients = new ArrayCollection();
+        $this->controlGroups = new ArrayCollection();
+        $this->groupQueues = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -126,29 +133,59 @@ class Channel
     }
 
     /**
-     * @return Collection|ControlSet[]
+     * @return Collection|ControlGroup[]
      */
-    public function getControlSets(): Collection
+    public function getControlGroups(): Collection
     {
-        return $this->controlSets;
+        return $this->controlGroups;
     }
 
-    public function addControlSet(ControlSet $controlSet): self
+    public function addControlGroup(ControlGroup $controlGroup): self
     {
-        if (!$this->controlSets->contains($controlSet)) {
-            $this->controlSets[] = $controlSet;
-            $controlSet->setChannel($this);
+        if (!$this->controlGroups->contains($controlGroup)) {
+            $this->controlGroups[] = $controlGroup;
+            $controlGroup->setChannel($this);
         }
 
         return $this;
     }
 
-    public function removeControlSet(ControlSet $controlSet): self
+    public function removeControlGroup(ControlGroup $controlGroup): self
     {
-        if ($this->controlSets->removeElement($controlSet)) {
+        if ($this->controlGroups->removeElement($controlGroup)) {
             // set the owning side to null (unless already changed)
-            if ($controlSet->getChannel() === $this) {
-                $controlSet->setChannel(null);
+            if ($controlGroup->getChannel() === $this) {
+                $controlGroup->setChannel(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|GroupQueue[]
+     */
+    public function getGroupQueues(): Collection
+    {
+        return $this->groupQueues;
+    }
+
+    public function addGroupQueue(GroupQueue $groupQueue): self
+    {
+        if (!$this->groupQueues->contains($groupQueue)) {
+            $this->groupQueues[] = $groupQueue;
+            $groupQueue->setChannel($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupQueue(GroupQueue $groupQueue): self
+    {
+        if ($this->groupQueues->removeElement($groupQueue)) {
+            // set the owning side to null (unless already changed)
+            if ($groupQueue->getChannel() === $this) {
+                $groupQueue->setChannel(null);
             }
         }
 
